@@ -418,9 +418,9 @@ static void bcm2835_transfer_block_pio(struct bcm2835_host *host, bool is_read)
 
 			while (words) {
 				if (is_read)
-					*(buf++) = readl(host->ioaddr + SDDATA);
+					*(buf++) = cpu_to_le32(readl(host->ioaddr + SDDATA));
 				else
-					writel(*(buf++), host->ioaddr + SDDATA);
+					writel(le32_to_cpu(*(buf++)), host->ioaddr + SDDATA);
 				words--;
 			}
 		}
@@ -1109,7 +1109,7 @@ static void bcm2835_dma_complete_work(struct work_struct *work)
 			u32 edm = readl(host->ioaddr + SDEDM);
 
 			if ((edm >> 4) & 0x1f)
-				*(buf++) = readl(host->ioaddr + SDDATA);
+				*(buf++) = cpu_to_le32(readl(host->ioaddr + SDDATA));
 			host->drain_words--;
 		}
 
