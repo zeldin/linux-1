@@ -95,6 +95,7 @@ int rpi_firmware_property_list(struct rpi_firmware *fw,
 	u32 *buf;
 	dma_addr_t bus_addr;
 	int ret;
+	size_t i;
 
 	/* Packets are processed a dword at a time. */
 	if (size & 3)
@@ -108,24 +109,26 @@ int rpi_firmware_property_list(struct rpi_firmware *fw,
 	/* The firmware will error out without parsing in this case. */
 	WARN_ON(size >= 1024 * 1024);
 
-	buf[0] = size;
-	buf[1] = RPI_FIRMWARE_STATUS_REQUEST;
-	memcpy(&buf[2], data, tag_size);
-	buf[size / 4 - 1] = RPI_FIRMWARE_PROPERTY_END;
+	buf[0] = cpu_to_le32(size);
+	buf[1] = cpu_to_le32(RPI_FIRMWARE_STATUS_REQUEST);
+	for (i = 0; i < tag_size / 4; i++)
+		buf[2 + i] = cpu_to_le32(((u32 *)data)[i]);
+	buf[size / 4 - 1] = cpu_to_le32(RPI_FIRMWARE_PROPERTY_END);
 	wmb();
 
 	ret = rpi_firmware_transaction(fw, MBOX_CHAN_PROPERTY, bus_addr);
 
 	rmb();
-	memcpy(data, &buf[2], tag_size);
-	if (ret == 0 && buf[1] != RPI_FIRMWARE_STATUS_SUCCESS) {
+	for (i = 0; i < tag_size / 4; i++)
+		((u32 *)data)[i] = le32_to_cpu(buf[2 + i]);
+	if (ret == 0 && le32_to_cpu(buf[1]) != RPI_FIRMWARE_STATUS_SUCCESS) {
 		/*
 		 * The tag name here might not be the one causing the
 		 * error, if there were multiple tags in the request.
 		 * But single-tag is the most common, so go with it.
 		 */
 		dev_err(fw->cl.dev, "Request 0x%08x returned status 0x%08x\n",
-			buf[2], buf[1]);
+			le32_to_cpu(buf[2]), le32_to_cpu(buf[1]));
 		ret = -EINVAL;
 	} else if (ret == -ETIMEDOUT) {
 		WARN_ONCE(1, "Firmware transaction 0x%08x timeout", buf[2]);
