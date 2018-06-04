@@ -77,8 +77,8 @@ do {							\
  * reads and writes are executed in-order therefore the need for memory barriers
  * is obviated if we're only talking to USB.
  */
-#define FIQ_WRITE(_addr_,_data_) (*(volatile unsigned int *) (_addr_) = (_data_))
-#define FIQ_READ(_addr_) (*(volatile unsigned int *) (_addr_))
+#define FIQ_WRITE(_addr_,_data_) (*(volatile unsigned int *) (_addr_) = cpu_to_le32((_data_)))
+#define FIQ_READ(_addr_) (le32_to_cpu(*(volatile unsigned int *) (_addr_)))
 
 /* FIQ-ified register definitions. Offsets are from dwc_regs_base. */
 #define GINTSTS		0x014

@@ -461,7 +461,7 @@ uint32_t DWC_CPU_TO_LE32(uint32_t *p)
 #else
 	uint8_t *u_p = (uint8_t *)p;
 
-	return (u_p[3] | (u_p[2] << 8) | (u_p[1] << 16) | (u_p[0] << 24));
+	return (u_p[0] | (u_p[1] << 8) | (u_p[2] << 16) | (u_p[3] << 24));
 #endif
 }
 
@@ -483,7 +483,7 @@ uint32_t DWC_LE32_TO_CPU(uint32_t *p)
 #else
 	uint8_t *u_p = (uint8_t *)p;
 
-	return (u_p[3] | (u_p[2] << 8) | (u_p[1] << 16) | (u_p[0] << 24));
+	return (u_p[0] | (u_p[1] << 8) | (u_p[2] << 16) | (u_p[3] << 24));
 #endif
 }
 
@@ -504,7 +504,7 @@ uint16_t DWC_CPU_TO_LE16(uint16_t *p)
 	return *p;
 #else
 	uint8_t *u_p = (uint8_t *)p;
-	return (u_p[1] | (u_p[0] << 8));
+	return (u_p[0] | (u_p[1] << 8));
 #endif
 }
 
@@ -524,7 +524,7 @@ uint16_t DWC_LE16_TO_CPU(uint16_t *p)
 	return *p;
 #else
 	uint8_t *u_p = (uint8_t *)p;
-	return (u_p[1] | (u_p[0] << 8));
+	return (u_p[0] | (u_p[1] << 8));
 #endif
 }
 
