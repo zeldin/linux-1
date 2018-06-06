@@ -295,6 +295,14 @@ static int bcm2708_fb_set_bitfields(struct fb_var_screeninfo *var)
 		var->red.offset = var->green.offset + var->green.length;
 		var->transp.offset = var->red.offset + var->red.length;
 	}
+#ifdef __BIG_ENDIAN
+	if (var->bits_per_pixel >= 16) {
+		var->red.offset = var->bits_per_pixel - var->red.offset - var->red.length;
+		var->green.offset = var->bits_per_pixel - var->green.offset - var->green.length;
+		var->blue.offset = var->bits_per_pixel - var->blue.offset - var->blue.length;
+		var->transp.offset = var->bits_per_pixel - var->transp.offset - var->transp.length;
+	}
+#endif
 
 	return ret;
 }
