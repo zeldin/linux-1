@@ -1546,7 +1546,7 @@ choice
 
 config CPU_BIG_ENDIAN
 	bool "Build big-endian kernel"
-	depends on BROKEN
+#	depends on BROKEN
 	help
 	  Say Y if you plan on running a kernel with a big-endian userspace.
 
