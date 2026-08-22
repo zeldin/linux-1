@@ -134,8 +134,13 @@ typedef struct {
 	union {
 		uint32_t slock;
 		struct _tickets {
+#ifdef __BIG_ENDIAN
+			uint16_t next;
+			uint16_t owner;
+#else
 			uint16_t owner;
 			uint16_t next;
+#endif
 		} tickets;
 	};
 } __aligned(4) fiq_lock_t;
